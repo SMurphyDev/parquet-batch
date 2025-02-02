@@ -1,6 +1,6 @@
 [build-system]
 requires      = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"a
+build-backend = "setuptools.build_meta"
 
 [project]
 name            = "parquet-batch"
@@ -19,9 +19,12 @@ dependencies    = [
 ]
 requires-python = ">=3.9"
 
-[project.optional.dependencies]
+[project.optional-dependencies]
 dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
 
-[project.urls]
-Homepage = "github"
-Issues = "github/issues"
+#[project.urls]
+#Homepage = "github"
+#Issues = "github/issues"
+
+[tool.pip-tools]
+generate-hashes = true
