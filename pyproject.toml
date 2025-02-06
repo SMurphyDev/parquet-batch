@@ -20,7 +20,7 @@ dependencies    = [
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
+dev = ["black", "bumpver", "isort", "pip-tools", "pytest", "debugpy"]
 
 #[project.urls]
 #Homepage = "github"
@@ -36,4 +36,7 @@ pythonpath = [
 ]
 testpaths = [
     "tests"
+]
+markers = [
+    "slow", # Marks a test as slow
 ]
