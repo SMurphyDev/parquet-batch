@@ -80,38 +80,28 @@ class ParquetBatchReader:
 
         for dataset_batch in self.dataset.to_batches(**kwargs):
             # Find out how many rows and columns are in the current batch
-            num_cols = dataset_batch.num_columns
-            num_rows = dataset_batch.num_rows
+            num_records = dataset_batch.num_rows
             fields = dataset_batch.column_names
 
-            # Compute indices for each row and column in the curent batch. We use a generator so these
-            # only actually get computed when we try to iterate over them. This gives us indices in this format:
-            #
-            # row 0, col 0
-            # row 0, col 1
-            # row 0, col 2
-            #
-            # Which gives us a means to iterate over the table one row at a time.
-            indices = (
-                (row, col) for row in range(0, num_rows) for col in range(0, num_cols)
-            )
+            # Initialize data structure to hold rows.
+            records = [{}] * num_records
+            record_num = 0
+            field_num = 0
+            # Iterate over each column building up row level data.
+            for field in dataset_batch:
+                current_field = fields[field_num]
+                last_field = fields[-1:][0]
 
-            # Iterate over the indices keeping track of the current row and yielding row_values when it increments.
-            # When the value of row increases it means we've finished a row and moved on to the next.
-            current_row = 0
-            row_values = {}
-            for row, col in indices:
-                if row == current_row:
-                    row_values[fields[col]] = dataset_batch[col][row].as_py()
-                else:
-                    yield row_values
-                    current_row = row
-                    row_values = {}
-                    row_values[fields[col]] = dataset_batch[col][row].as_py()
+                for value in field:
+                    records[record_num][current_field] = value.as_py()
 
-            # One last yield outside of the loop. The if condition won't trigger on the final row so we need to
-            # include this to ensure it gets returned.
-            yield row_values
+                    if current_field == last_field:
+                        yield records[record_num]
+
+                    record_num += 1  # We're on the next record
+
+                record_num = 0
+                field_num += 1  # We're on the next field
 
     """
     This is a wrapper function arround Dataset.to_batches(**kwargs) that provides some default values for batch
@@ -135,5 +125,5 @@ class ParquetBatchReader:
             batch_size=10000,
             batch_readahead=4,
             fragment_readahead=1,
-            use_threads=True,
+            use_threads=False,
         )
