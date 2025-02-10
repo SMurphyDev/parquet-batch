@@ -1,3 +1,4 @@
+import gc
 import random as ra
 from collections.abc import Callable
 from itertools import tee
@@ -210,7 +211,9 @@ class ParquetTestData:
         self.file_paths = sorted(self.file_paths)
 
         # After the write, give arrow a kick to free up any memory it can
+        gc.collect()
         pa.default_memory_pool().release_unused()
+        pa.system_memory_pool().release_unused()
 
 
 class TestParquetBatchReader:
@@ -245,6 +248,29 @@ class TestParquetBatchReader:
             request.param["num_records"],
             request.param["batch_size"],
         )
+
+    """
+    Sometimes running the bulk tests on machines with less than 8gb of ram we end up allocating enough memory to hit 
+    swap space, which seriously degrades performance. So we have this fixture to try prompt python to run a gc 
+    collection and ask arrow to free up anything it can before running the test.
+    """
+
+    @pytest.fixture(scope="function", autouse=True)
+    def attempt_to_free_memory(self):
+        gc.collect()
+        pa.default_memory_pool().release_unused()
+        pa.system_memory_pool().release_unused()
+
+    """
+    This runs after each test to free up memory. Running these on my 8GB mac makes the bulk tests hit swap and 
+    performance completely degrades, even though each test runs acceptably individually.
+    """
+
+    # @pytest.fixture(autouse=True)
+    # def run_after_tests(self):
+    #    yield
+    #    gc.collect()  # Tell python run the gc. May or may not achieve anything.
+    #    pa.default_cpu_memory_manager().release_unused()  # Tell arrow to free up any memory it can.
 
     ###########################################################################
     #
@@ -530,6 +556,12 @@ class TestParquetBatchReader:
         "test_data",
         [
             {  # Create exactly one parquet file in the dataset
+                "file_size": 10000,
+                "num_fields": 50,
+                "num_records": 1000000,
+                "batch_size": 10000,
+            },
+            {  # Create exactly multiple small parquet files in a large dataset
                 "file_size": 10000,
                 "num_fields": 50,
                 "num_records": 1000000,
