@@ -40,3 +40,4 @@ testpaths = [
 markers = [
     "slow", # Marks a test as slow
 ]
+addopts = "-m \"not slow\""
