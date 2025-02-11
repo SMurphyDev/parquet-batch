@@ -11,7 +11,7 @@ authors         = [{ name = "SMurphyDev", email="stephen@smurphydev.ie" }]
 maintainers     = [{ name = "SMurphyDev", email="stephen@smurphydev.ie" }]
 license         = { file = "LICENSE" }
 classifiers     = [
-    "LICENSE :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3"
 ]
 keywords        = ["parquet", "reader"]
