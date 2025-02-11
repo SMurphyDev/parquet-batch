@@ -40,7 +40,7 @@ class ParquetTestData:
 
         Parameters:
             base_dir    (str) : The directory our test data will be written to.
-            file_size   (int) : The maximum number of records allowe in one of the parquet files created in the Dataset.
+            file_size   (int) : The maximum number of records allowed in one of the parquet files created in the Dataset.
             num_fields  (int) : The number of fields/columns to generate data for.
             num_records (int) : The total number of records to be created in the test data Dataset.
             batch_size  (int) : The maximum number of records to be created and written to disk at a time. Tweak this to control memory pressure when creating data for a bulk load.
@@ -93,7 +93,7 @@ class ParquetTestData:
     """
     Create functions for generating test data and map them to a field name. We can use these functions to generate
     test data by field. By associating the generating function to a field we ensure we always generate the same type
-    of data for a given field. We compute this mapping once and cache it for consistency.
+    of data for a given field. 
     """
 
     def __get_field_data_funcs(self) -> dict[str, Callable]:
@@ -132,7 +132,7 @@ class ParquetTestData:
 
     """
     A generator function which will return one RecordBatch up to the total number of batches we need to reach
-    our desired test data record amount. This function allows us to geneate data in small amounts which can then
+    our desired test data record amount. This function allows us to generate data in small amounts which can then
     be written to disk in batches, thus keeping memory pressure relatively low. This enables us to generate large
     amounts of data for testing bulk reads on relativley modest hardware.
     """
@@ -173,7 +173,7 @@ class ParquetTestData:
             yield record_batch
 
     """
-    Entry point into our test dat generation class. This uses the __batch_record_generator() as an argument to 
+    Entry point into our test data generation class. This uses the __batch_record_generator() as an argument to 
     write_dataset. The generator creates BatchRecords on each iteration and write dataset processes them to write
     the batches out to our test files one at a time. We avoid using threads to ensure data is written sequentially
     as it is generated. This is certainly slower than allowing parrallel writes, but the sole concern here is memory
@@ -186,7 +186,7 @@ class ParquetTestData:
         # You'll note it's not there. Anyway, in our case the iterable is a generator, which is lazily evaulated, and
         # I'm relying on the schema being inferred when a RecordBatch is created inside of the generator. Which won't
         # happen until after write_dataset is called, which we can't do without a schema. Because we are pseudo randomly
-        # generating data, I don't want to hard code a schema. So instead we must tee the generator in order to peek iterable
+        # generating data, I don't want to hard code a schema. So instead we must tee the generator in order to peek it
         # and grab the inferred schema from the first generated record batch.
         record_batch_peeker, record_batch_generator = tee(
             self.__batch_record_generator(), 2
@@ -260,17 +260,6 @@ class TestParquetBatchReader:
         gc.collect()
         pa.default_memory_pool().release_unused()
         pa.system_memory_pool().release_unused()
-
-    """
-    This runs after each test to free up memory. Running these on my 8GB mac makes the bulk tests hit swap and 
-    performance completely degrades, even though each test runs acceptably individually.
-    """
-
-    # @pytest.fixture(autouse=True)
-    # def run_after_tests(self):
-    #    yield
-    #    gc.collect()  # Tell python run the gc. May or may not achieve anything.
-    #    pa.default_cpu_memory_manager().release_unused()  # Tell arrow to free up any memory it can.
 
     ###########################################################################
     #
@@ -365,7 +354,7 @@ class TestParquetBatchReader:
 
     """
     Verify we can create a ParquetBatchReader using it's constructor from a Dataset and read back a list of 
-    rows with get_rows([fields]). Note that I have opted not to test every possible method for creating a dataset here.
+    rows with get_rows([fields]).
     """
 
     @pytest.mark.parametrize(
@@ -424,7 +413,7 @@ class TestParquetBatchReader:
 
     """
     Verify we can create a ParquetBatchReader using it's from_dataset(Dataset) factory and read back a list of 
-    rows with get_rows([fields]). Note that I have opted not to test every possible method for creating a dataset here.
+    rows with get_rows([fields]).
     """
 
     @pytest.mark.parametrize(

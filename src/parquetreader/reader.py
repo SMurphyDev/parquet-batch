@@ -33,7 +33,7 @@ class ParquetReader:
     in the apache arrow docs: https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.
     Dataset.to_batches. It wraps the call to to_batches(**kwargs). We read each row in each batch, convert it to it's 
     python type and yield the results one at a time allowing us to somewhat lazily process records from the underlying 
-    parquet_file. Note that I say somewhat as the default batch_readahead is 16 batches!
+    parquet_file.
 
     Use this if you know what you are doing and really need to tweak the performance of the batch read.
         
