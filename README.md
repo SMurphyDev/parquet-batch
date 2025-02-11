@@ -1,5 +1,7 @@
 # SMurphyDev - Parquet Reader
 
+version = 0.0.1
+
 The purpose of this library is to enable reading parquet files one row at a
 time in a relatively memory consious manner. I say relatively because this
 library is a thin wrapper over pyarrow, and pyarrow Datasets, and arrows favors

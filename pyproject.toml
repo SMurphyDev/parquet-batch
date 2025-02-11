@@ -3,17 +3,19 @@ requires      = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name            = "parquet-batch"
+name            = "parquetreader"
 version         = "0.0.1"
-description     = "Pyarrow Dataset wrapper for batch reading parquet datasets as rows"
+description     = "Pyarrow Dataset wrapper for reading parquet datasets as rows"
 readme          = "README.md"
 authors         = [{ name = "SMurphyDev", email="stephen@smurphydev.ie" }]
-license         = { file = "LICENSE" }
+maintainers     = [{ name = "SMurphyDev", email="stephen@smurphydev.ie" }]
+license         = "MIT"
+license-files   = ["LICENSE"]
 classifiers     = [
     "LICENSE :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3"
 ]
-keywords        = ["parquet", "batch"]
+keywords        = ["parquet", "reader"]
 dependencies    = [
    "pyarrow >= 19.0.0"
 ]
@@ -22,9 +24,10 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 dev = ["black", "bumpver", "isort", "pip-tools", "pytest", "debugpy"]
 
-#[project.urls]
-#Homepage = "github"
-#Issues = "github/issues"
+[project.urls]
+Homepage = "https://github.com/SMurphyDev/parquet-batch"
+repository = "https://github.com/SMurphyDev/parquet-batch.git"
+Issues = "https://github.com/SMurphyDev/parquet-batch/issues"
 
 [tool.pip-tools]
 generate-hashes = true
@@ -41,3 +44,24 @@ markers = [
     "slow", # Marks a test as slow
 ]
 addopts = "-m \"not slow\""
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+]
+"README.md" = [
+    "{version}"
+]
+
