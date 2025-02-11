@@ -3,38 +3,6 @@ from typing import Generator
 import pyarrow.dataset as ds
 
 """
-This factory function allows you to set up a batch reader instance configured directly with a 
-Dataset instance.
-
-    Parameters:
-        1. (Dataset): An appache arrow Dataset pointing to the parquet files you wish to process.
-
-    Returns:
-        (ParquetBatchReader): An instance of this class which may be used to process the parquet file.
-"""
-
-
-def from_dataset(dataset: ds.Dataset):
-    return ParquetBatchReader(dataset)
-
-
-"""
-This is simple factory function which sets up some reasonable
-defaults to enable users to get started quickly.
-
-    Parameters:
-        1. (str): A path to a parquet file or directory containing parquet files.
-
-    Returns:
-        (ParquetBatchReader): An instance of this class which may be used to process the parquet file.
-"""
-
-
-def from_path(parquet_path: str):
-    return ParquetBatchReader(ds.dataset(parquet_path))
-
-
-"""
 This is a helper class for that wraps apache arrow Dataset and Dataset.to_batches(**kwargs) and provides some
 utilities for batch reading parquet files as rows. There are simple methods which will set up a datasource from
 a path and apply sane defaults for batch reading an entire Dataset in a ram constrained environment, and there are
@@ -76,7 +44,7 @@ class ParquetBatchReader:
             (Generator): A generator where each element represents 1 row from the underlying parquet source
     """
 
-    def get_rows_with_args(self, **kwargs) -> Generator[dict]:
+    def get_rows_with_args(self, **kwargs) -> Generator[dict, None, None]:
 
         for dataset_batch in self.dataset.to_batches(**kwargs):
             # Find out how many rows and columns are in the current batch
@@ -119,7 +87,7 @@ class ParquetBatchReader:
             (Generator): A generator where each element represents 1 row from the underlying parquet source
     """
 
-    def get_rows(self, columns: list[str]) -> Generator[dict]:
+    def get_rows(self, columns: list[str]) -> Generator[dict, None, None]:
         return self.get_rows_with_args(
             columns=columns,
             batch_size=10000,
@@ -127,3 +95,35 @@ class ParquetBatchReader:
             fragment_readahead=1,
             use_threads=False,
         )
+
+
+"""
+This factory function allows you to set up a batch reader instance configured directly with a 
+Dataset instance.
+
+    Parameters:
+        1. (Dataset): An appache arrow Dataset pointing to the parquet files you wish to process.
+
+    Returns:
+        (ParquetBatchReader): An instance of this class which may be used to process the parquet file.
+"""
+
+
+def from_dataset(dataset: ds.Dataset) -> ParquetBatchReader:
+    return ParquetBatchReader(dataset)
+
+
+"""
+This is simple factory function which sets up some reasonable
+defaults to enable users to get started quickly.
+
+    Parameters:
+        1. (str): A path to a parquet file or directory containing parquet files.
+
+    Returns:
+        (ParquetBatchReader): An instance of this class which may be used to process the parquet file.
+"""
+
+
+def from_path(parquet_path: str) -> ParquetBatchReader:
+    return ParquetBatchReader(ds.dataset(parquet_path))

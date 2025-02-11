@@ -137,7 +137,7 @@ class ParquetTestData:
     amounts of data for testing bulk reads on relativley modest hardware.
     """
 
-    def __batch_record_generator(self) -> Generator[pa.RecordBatch]:
+    def __batch_record_generator(self) -> Generator[pa.RecordBatch, None, None]:
         field_funcs = self.__get_field_data_funcs()
 
         for current_batch in range(1, self.__num_batches + 1):
