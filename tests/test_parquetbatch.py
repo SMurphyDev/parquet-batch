@@ -8,7 +8,7 @@ import pyarrow as pa
 import pyarrow.dataset as ds
 import pytest
 
-import parquetbatch.reader as rd
+import parquetreader.reader as rd
 
 """
 Genereate parquet testdata in a memory conscious manner. When instansiated it will generate the requested volume of
@@ -407,7 +407,7 @@ class TestParquetBatchReader:
             exclude_invalid_files=True,
             ignore_prefixes=[".", "-"],
         )
-        pbr = rd.ParquetBatchReader(dataset)
+        pbr = rd.ParquetReader(dataset)
 
         record_idx = 0
         for record in pbr.get_rows(fields):
